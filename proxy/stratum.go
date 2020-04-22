@@ -120,13 +120,13 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 		if errReply != nil {
 			return cs.sendTCPError(req.Id, errReply)
 		}
-		return cs.sendTCPResult(req.Id, reply, nil)
+		return cs.sendTCPResult(req.Id, reply)
 	case "eth_getWork":
 		reply, errReply := s.handleGetWorkRPC(cs)
 		if errReply != nil {
 			return cs.sendTCPError(req.Id, errReply)
 		}
-		return cs.sendTCPResult(req.Id, &reply, nil)
+		return cs.sendTCPResult(req.Id, &reply)
 	case "eth_submitWork":
 		var params []string
 		err := json.Unmarshal(req.Params, &params)
@@ -136,26 +136,22 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 		}
 		reply, errReply := s.handleTCPSubmitRPC(cs, req.Worker, params)
 		if errReply != nil {
-			if errReply.Code != 20 {
-				return cs.sendTCPError(req.Id, errReply)
-			} else {
-				return cs.sendTCPResult(req.Id, &reply, errReply)
-			}
+			return cs.sendTCPError(req.Id, errReply)
 		}
-		return cs.sendTCPResult(req.Id, &reply, nil)
+		return cs.sendTCPResult(req.Id, &reply)
 	case "eth_submitHashrate":
-		return cs.sendTCPResult(req.Id, true, nil)
+		return cs.sendTCPResult(req.Id, true)
 	default:
 		errReply := s.handleUnknownRPC(cs, req.Method)
 		return cs.sendTCPError(req.Id, errReply)
 	}
 }
 
-func (cs *Session) sendTCPResult(id json.RawMessage, result interface{}, reply *ErrorReply) error {
+func (cs *Session) sendTCPResult(id json.RawMessage, result interface{}) error {
 	cs.Lock()
 	defer cs.Unlock()
 
-	message := JSONRpcResp{Id: id, Version: "2.0", Error: reply, Result: result}
+	message := JSONRpcResp{Id: id, Version: "2.0", Error: nil, Result: result}
 	return cs.enc.Encode(&message)
 }
 

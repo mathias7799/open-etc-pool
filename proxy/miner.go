@@ -1,7 +1,6 @@
 package proxy
 
 import (
-	"fmt"
 	"log"
 	"math/big"
 	"strconv"
@@ -13,7 +12,7 @@ import (
 
 var hasher = ethash.New()
 
-func (s *ProxyServer) processShare(login, id, ip string, t *BlockTemplate, params []string) (bool, bool, error) {
+func (s *ProxyServer) processShare(login, id, ip string, t *BlockTemplate, params []string) (bool, bool) {
 	nonceHex := params[0]
 	hashNoNonce := params[1]
 	mixDigest := params[2]
@@ -23,7 +22,7 @@ func (s *ProxyServer) processShare(login, id, ip string, t *BlockTemplate, param
 	h, ok := t.headers[hashNoNonce]
 	if !ok {
 		log.Printf("Stale share from %v@%v", login, ip)
-		return false, false, nil
+		return false, false
 	}
 
 	share := Block{
@@ -43,7 +42,7 @@ func (s *ProxyServer) processShare(login, id, ip string, t *BlockTemplate, param
 	}
 
 	if !hasher.Verify(share) {
-		return false, false, nil
+		return false, false
 	}
 
 	if hasher.Verify(block) {
@@ -52,12 +51,12 @@ func (s *ProxyServer) processShare(login, id, ip string, t *BlockTemplate, param
 			log.Printf("Block submission failure at height %v for %v: %v", h.height, t.Header, err)
 		} else if !ok {
 			log.Printf("Block rejected at height %v for %v", h.height, t.Header)
-			return false, false, nil
+			return false, false
 		} else {
 			s.fetchBlockTemplate()
 			exist, err := s.backend.WriteBlock(login, id, params, shareDiff, h.diff.Int64(), h.height, s.hashrateExpiration)
 			if exist {
-				return true, false, nil
+				return true, false
 			}
 			if err != nil {
 				log.Println("Failed to insert block candidate into backend:", err)
@@ -67,24 +66,13 @@ func (s *ProxyServer) processShare(login, id, ip string, t *BlockTemplate, param
 			log.Printf("Block found by miner %v@%v at height %d", login, ip, h.height)
 		}
 	} else {
-		// check hashrate limit
-		if s.config.Proxy.HashLimit > 0 {
-			currentHashrate, _ := s.backend.GetCurrentHashrate(login)
-
-			if s.config.Proxy.HashLimit > 0 && currentHashrate > s.config.Proxy.HashLimit {
-				err := fmt.Errorf("hashLimit exceed: %v(current) > %v(hashLimit)", currentHashrate, s.config.Proxy.HashLimit)
-				log.Println("Failed to insert share data into backend:", err)
-				return false, false, err
-			}
-		}
-
 		exist, err := s.backend.WriteShare(login, id, params, shareDiff, h.height, s.hashrateExpiration)
 		if exist {
-			return true, false, nil
+			return true, false
 		}
 		if err != nil {
 			log.Println("Failed to insert share data into backend:", err)
 		}
 	}
-	return false, true, nil
+	return false, true
 }
