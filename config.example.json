@@ -3,6 +3,9 @@
 	"coin": "eth",
 	"name": "main",
 
+	"avgBlockTime": 14.4,
+	"blockTimeWindow": 300,
+
 	"proxy": {
 		"hashLimit" : 240000000,
 		"enabled": true,
