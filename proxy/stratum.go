@@ -59,7 +59,7 @@ func (s *ProxyServer) ListenTCP() {
 		accept <- n
 		go func(cs *Session) {
 			err = s.handleTCPClient(cs)
-			if err != nil || cs.lastErr != nil {
+			if err != nil {
 				s.removeSession(cs)
 				conn.Close()
 			}

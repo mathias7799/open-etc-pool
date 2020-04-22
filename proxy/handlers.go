@@ -5,7 +5,6 @@ import (
 	"log"
 	"regexp"
 	"strings"
-	"errors"
 
 	"github.com/sammy007/open-ethereum-pool/rpc"
 	"github.com/sammy007/open-ethereum-pool/util"
@@ -70,46 +69,39 @@ func (s *ProxyServer) handleSubmitRPC(cs *Session, login, id string, params []st
 		log.Printf("Malformed PoW result from %s@%s %v", login, cs.ip, params)
 		return false, &ErrorReply{Code: -1, Message: "Malformed PoW result"}
 	}
+	t := s.currentBlockTemplate()
+	exist, validShare, extraErr := s.processShare(login, id, cs.ip, t, params)
+	ok := s.policy.ApplySharePolicy(cs.ip, !exist && validShare && extraErr == nil)
 
-	go func(s *ProxyServer, cs *Session, login, id string, params []string) {
-		t := s.currentBlockTemplate()
-		exist, validShare, extraErr := s.processShare(login, id, cs.ip, t, params)
-		ok := s.policy.ApplySharePolicy(cs.ip, !exist && validShare && extraErr == nil)
+	if exist {
+		log.Printf("Duplicate share from %s@%s %v", login, cs.ip, params)
+		return false, &ErrorReply{Code: 22, Message: "Duplicate share"}
+	}
 
-		if exist {
-			log.Printf("Duplicate share from %s@%s %v", login, cs.ip, params)
-			cs.lastErr = errors.New("Duplicate share")
-			return
-		}
-
-		if extraErr != nil {
-			log.Printf("Invalid share from %s@%s: %v", login, cs.ip, extraErr)
-			// Bad shares limit reached, return error and close
-			if !ok {
-				cs.lastErr = errors.New("Invalid share")
-				return
-			}
-			cs.lastErr = errors.New(fmt.Sprintf("Invalid share : %v", extraErr))
-			return
-		}
-
-		if !validShare {
-			log.Printf("Invalid share from %s@%s", login, cs.ip)
-			// Bad shares limit reached, return error and close
-			if !ok {
-				cs.lastErr = errors.New("Invalid share")
-				return
-			}
-		}
-		if s.config.Proxy.Debug {
-			log.Printf("Valid share from %s@%s", login, cs.ip)
-		}
-
+	if extraErr != nil {
+		log.Printf("Invalid share from %s@%s: %v", login, cs.ip, extraErr)
+		// Bad shares limit reached, return error and close
 		if !ok {
-			cs.lastErr = errors.New("High rate of invalid shares")
+			return false, &ErrorReply{Code: 23, Message: "Invalid share"}
 		}
-	}(s, cs, login, id, params)
+		return false, &ErrorReply{Code: 20, Message: fmt.Sprintf("Invalid share : %v", extraErr)}
+	}
 
+	if !validShare {
+		log.Printf("Invalid share from %s@%s", login, cs.ip)
+		// Bad shares limit reached, return error and close
+		if !ok {
+			return false, &ErrorReply{Code: 23, Message: "Invalid share"}
+		}
+		return false, nil
+	}
+	if s.config.Proxy.Debug {
+		log.Printf("Valid share from %s@%s", login, cs.ip)
+	}
+
+	if !ok {
+		return true, &ErrorReply{Code: -1, Message: "High rate of invalid shares"}
+	}
 	return true, nil
 }
 
