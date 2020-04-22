@@ -110,7 +110,6 @@ type Worker struct {
 	TotalHR int64 `json:"hr2"`
 }
 
-func NewRedisClient(cfg *Config, prefix string, pplns int64) *RedisClient {
 func NewRedisClient(cfg *Config, prefix string) *RedisClient {
 type Finder struct {
 	ID          string `json:"id"`
@@ -121,7 +120,7 @@ type Finder struct {
 	Timestamp   int64  `json:"timestamp"`
 }
 
-func NewRedisClient(cfg *Config, prefix string) *RedisClient {
+func NewRedisClient(cfg *Config, prefix string, pplns int64) *RedisClient {
 	client := redis.NewClient(&redis.Options{
 		Addr:     cfg.Endpoint,
 		Password: cfg.Password,
