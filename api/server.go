@@ -10,19 +10,16 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
-	"time"
+	"time"s
 
 	"github.com/gorilla/mux"
 	"github.com/robfig/cron"
 
 	"github.com/Konstantin35/open-ethereum-pool/storage"
 	"github.com/Konstantin35/open-ethereum-pool/util"
-	"github.com/sammy007/open-ethereum-pool/storage"
-	"github.com/sammy007/open-ethereum-pool/util"
-	"github.com/sammy007/open-ethereum-pool/payouts"
-	"github.com/sammy007/open-ethereum-pool/rpc"
-	"github.com/sammy007/open-ethereum-pool/storage"
-	"github.com/sammy007/open-ethereum-pool/util"
+	"github.com/Konstantin35/open-ethereum-pool/payouts"
+	"github.com/Konstantin35/open-ethereum-pool/rpc"
+
 )
 
 type ApiConfig struct {
