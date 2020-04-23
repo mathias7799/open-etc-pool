@@ -10,7 +10,7 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
-	"time"s
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/robfig/cron"
