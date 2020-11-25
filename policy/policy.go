@@ -9,13 +9,8 @@ import (
 	"sync/atomic"
 	"time"
 
-<<<<<<< HEAD
 	"github.com/etclabscore/open-etc-pool/storage"
 	"github.com/etclabscore/open-etc-pool/util"
-=======
-	"github.com/Konstantin35/open-ethereum-pool/storage"
-	"github.com/Konstantin35/open-ethereum-pool/util"
->>>>>>> master
 )
 
 type Config struct {

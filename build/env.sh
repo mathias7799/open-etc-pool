@@ -8,7 +8,6 @@ if [ ! -f "build/env.sh" ]; then
 fi
 
 # Create fake Go workspace if it doesn't exist yet.
-<<<<<<< HEAD
 # workspace="$PWD/build/_workspace"
 
 # root="$PWD"
@@ -19,17 +18,6 @@ fi
 #    ln -s ../../../../../. open-etc-pool
 #    cd "$root"
 # fi
-=======
-workspace="$PWD/build/_workspace"
-root="$PWD"
-ethdir="$workspace/src/github.com/Konstantin35"
-if [ ! -L "$ethdir/open-ethereum-pool" ]; then
-    mkdir -p "$ethdir"
-    cd "$ethdir"
-    ln -s ../../../../../. open-ethereum-pool
-    cd "$root"
-fi
->>>>>>> master
 
 # Set up the environment to use the workspace.
 # Also add Godeps workspace so we build using canned dependencies.

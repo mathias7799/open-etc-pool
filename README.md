@@ -12,7 +12,6 @@
 * Modern beautiful Ember.js frontend
 * Separate stats for workers: can highlight timed-out workers so miners can perform maintenance of rigs
 * JSON-API for stats
-* PPLNS block reward
 
 ### Building on Linux
 
@@ -132,10 +131,7 @@ otherwise you will get errors on start because of JSON comments.**
       // Bind stratum mining socket to this IP:PORT
       "listen": "0.0.0.0:8008",
       "timeout": "120s",
-      "maxConn": 8192,
-      "tls": false,
-      "certFile": "/path/to/cert.pem",
-      "keyFile": "/path/to/key.pem"
+      "maxConn": 8192
     },
 
     // Try to get new job from geth in this interval
