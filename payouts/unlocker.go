@@ -10,9 +10,15 @@ import (
 
 	"github.com/ethereum/go-ethereum/common/math"
 
+<<<<<<< HEAD
 	"github.com/etclabscore/open-etc-pool/rpc"
 	"github.com/etclabscore/open-etc-pool/storage"
 	"github.com/etclabscore/open-etc-pool/util"
+=======
+	"github.com/Konstantin35/open-ethereum-pool/rpc"
+	"github.com/Konstantin35/open-ethereum-pool/storage"
+	"github.com/Konstantin35/open-ethereum-pool/util"
+>>>>>>> master
 )
 
 type UnlockerConfig struct {
@@ -221,7 +227,7 @@ func (u *BlockUnlocker) handleBlock(block *rpc.GetBlockReply, candidate *storage
 		return err
 	}
 	candidate.Height = correctHeight
-	reward := getConstReward(candidate.Height)
+	reward := GetConstReward(candidate.Height)
 
 	// Add TX fees
 	extraTxReward, err := u.getExtraRewardForTx(block)
@@ -465,7 +471,12 @@ func (u *BlockUnlocker) calculateRewards(block *storage.BlockData) (*big.Rat, *b
 		return nil, nil, nil, nil, err
 	}
 
-	rewards := calculateRewardsForShares(shares, block.TotalShares, minersProfit)
+	totalShares := int64(0)
+	for _, val := range shares {
+		totalShares += val
+	}
+
+	rewards := calculateRewardsForShares(shares, totalShares, minersProfit)
 
 	if block.ExtraReward != nil {
 		extraReward := new(big.Rat).SetInt(block.ExtraReward)
@@ -513,11 +524,17 @@ func weiToShannonInt64(wei *big.Rat) int64 {
 	return value
 }
 
+<<<<<<< HEAD
 // GetRewardByEra gets a block reward at disinflation rate.
 // Constants MaxBlockReward, DisinflationRateQuotient, and DisinflationRateDivisor assumed.
 func GetBlockWinnerRewardByEra(era *big.Int, blockReward *big.Int) *big.Int {
 	if era.Cmp(big.NewInt(0)) == 0 {
 		return new(big.Int).Set(blockReward)
+=======
+func GetConstReward(height int64) *big.Int {
+	if height >= byzantiumHardForkHeight {
+		return new(big.Int).Set(byzantiumReward)
+>>>>>>> master
 	}
 
 	// MaxBlockReward _r_ * (4/5)**era == MaxBlockReward * (4**era) / (5**era)
@@ -565,12 +582,12 @@ func getConstReward(height int64) *big.Int {
 }
 
 func getRewardForUncle(height int64) *big.Int {
-	reward := getConstReward(height)
+	reward := GetConstReward(height)
 	return new(big.Int).Div(reward, new(big.Int).SetInt64(32))
 }
 
 func getUncleReward(uHeight, height int64) *big.Int {
-	reward := getConstReward(height)
+	reward := GetConstReward(height)
 	k := height - uHeight
 	reward.Mul(big.NewInt(8-k), reward)
 	reward.Div(reward, big.NewInt(8))

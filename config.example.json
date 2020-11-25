@@ -2,6 +2,10 @@
 	"threads": 2,
 	"coin": "etc",
 	"name": "main",
+	"pplns": 9000,
+
+	"avgBlockTime": 14.4,
+	"blockTimeWindow": 300,
 
 	"proxy": {
 		"enabled": true,
@@ -15,13 +19,17 @@
 		"hashrateExpiration": "3h",
 
 		"healthCheck": true,
+		"debug": false,
 		"maxFails": 100,
 
 		"stratum": {
 			"enabled": true,
 			"listen": "0.0.0.0:8008",
 			"timeout": "120s",
-			"maxConn": 8192
+			"maxConn": 8192,
+			"tls": false,
+			"certFile": "/path/to/cert.pem",
+			"keyFile": "/path/to/key.pem"
 		},
 
 		"stratum_nice_hash": {
@@ -63,7 +71,11 @@
 		"hashrateLargeWindow": "3h",
 		"luckWindow": [64, 128, 256],
 		"payments": 30,
-		"blocks": 50
+		"blocks": 50,
+		"poolCharts":"0 */20 * * * *",
+		"poolChartsNum":74,
+		"minerCharts":"0 */20 * * * *",
+		"minerChartsNum":74
 	},
 
 	"upstreamCheckInterval": "5s",

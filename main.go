@@ -11,12 +11,20 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/fatih/structs"
 	"github.com/yvasiyarov/gorelic"
 
+<<<<<<< HEAD
 	"github.com/etclabscore/open-etc-pool/api"
 	"github.com/etclabscore/open-etc-pool/payouts"
 	"github.com/etclabscore/open-etc-pool/proxy"
 	"github.com/etclabscore/open-etc-pool/storage"
+=======
+	"github.com/Konstantin35/open-ethereum-pool/api"
+	"github.com/Konstantin35/open-ethereum-pool/payouts"
+	"github.com/Konstantin35/open-ethereum-pool/proxy"
+	"github.com/Konstantin35/open-ethereum-pool/storage"
+>>>>>>> master
 )
 
 var cfg proxy.Config
@@ -28,7 +36,8 @@ func startProxy() {
 }
 
 func startApi() {
-	s := api.NewApiServer(&cfg.Api, backend)
+	settings := structs.Map(&cfg)
+	s := api.NewApiServer(&cfg.Api, settings, backend)
 	s.Start()
 }
 
@@ -82,7 +91,7 @@ func main() {
 
 	startNewrelic()
 
-	backend = storage.NewRedisClient(&cfg.Redis, cfg.Coin)
+	backend = storage.NewRedisClient(&cfg.Redis, cfg.Coin, cfg.Pplns)
 	pong, err := backend.Check()
 	if err != nil {
 		log.Printf("Can't establish connection to backend: %v", err)

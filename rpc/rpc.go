@@ -14,7 +14,11 @@ import (
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 
+<<<<<<< HEAD
 	"github.com/etclabscore/open-etc-pool/util"
+=======
+	"github.com/Konstantin35/open-ethereum-pool/util"
+>>>>>>> master
 )
 
 type RPCClient struct {
@@ -35,6 +39,7 @@ type GetBlockReply struct {
 	Difficulty   string   `json:"difficulty"`
 	GasLimit     string   `json:"gasLimit"`
 	GasUsed      string   `json:"gasUsed"`
+	Timestamp    string   `json:"timestamp"`
 	Transactions []Tx     `json:"transactions"`
 	Uncles       []string `json:"uncles"`
 	// https://github.com/ethereum/EIPs/issues/95
@@ -96,6 +101,19 @@ func (r *RPCClient) GetWork() ([]string, error) {
 	var reply []string
 	err = json.Unmarshal(*rpcResp.Result, &reply)
 	return reply, err
+}
+
+func (r *RPCClient) GetPendingBlock() (*GetBlockReplyPart, error) {
+	rpcResp, err := r.doPost(r.Url, "eth_getBlockByNumber", []interface{}{"pending", false})
+	if err != nil {
+		return nil, err
+	}
+	if rpcResp.Result != nil {
+		var reply *GetBlockReplyPart
+		err = json.Unmarshal(*rpcResp.Result, &reply)
+		return reply, err
+	}
+	return nil, nil
 }
 
 func (r *RPCClient) GetPendingBlock() (*GetBlockReplyPart, error) {

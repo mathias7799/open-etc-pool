@@ -5,8 +5,13 @@ import (
 	"os"
 	"testing"
 
+<<<<<<< HEAD
 	"github.com/etclabscore/open-etc-pool/rpc"
 	"github.com/etclabscore/open-etc-pool/storage"
+=======
+	"github.com/Konstantin35/open-ethereum-pool/rpc"
+	"github.com/Konstantin35/open-ethereum-pool/storage"
+>>>>>>> master
 )
 
 func TestMain(m *testing.M) {
