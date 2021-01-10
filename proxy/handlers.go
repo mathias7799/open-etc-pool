@@ -2,10 +2,8 @@ package proxy
 
 import (
 	"log"
-	"math"
 	"regexp"
 	"strings"
-	"time"
 
 	"github.com/etclabscore/open-etc-pool/rpc"
 	"github.com/etclabscore/open-etc-pool/util"
